@@ -1,27 +1,23 @@
 import pygame
 import math
 
-# Настройки окна
 WIDTH, HEIGHT = 800, 600
 FPS = 60
 
-# Цвета
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 
-# Инициализация
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Shape Drawing")
 clock = pygame.time.Clock()
 
-# Переменные
 start_pos = None
 drawing = False
-shape_type = "square"  # default
-shapes = []  # список нарисованных фигур
-erase_mode = False  # режим стерки
+shape_type = "square"
+shapes = []
+erase_mode = False
 
 def draw_square(surface, start, end, color):
     x1, y1 = start
@@ -59,13 +55,11 @@ def draw_rhombus(surface, start, end, color):
     ]
     pygame.draw.polygon(surface, color, points, 2)
 
-# Главный цикл
 run = True
 while run:
     clock.tick(FPS)
     win.fill(WHITE)
 
-    # Отрисовка сохранённых фигур
     for shape in shapes:
         typ, start, end = shape
         if typ == "square":
@@ -77,7 +71,6 @@ while run:
         elif typ == "rhombus":
             draw_rhombus(win, start, end, BLACK)
 
-    # Отрисовка текущей фигуры при удержании мыши
     if drawing and start_pos:
         current_pos = pygame.mouse.get_pos()
         if shape_type == "square":
@@ -89,24 +82,20 @@ while run:
         elif shape_type == "rhombus":
             draw_rhombus(win, start_pos, current_pos, BLUE)
 
-    # Если режим стерки, рисуем белым
     if erase_mode and drawing and start_pos:
         current_pos = pygame.mouse.get_pos()
-        draw_square(win, start_pos, current_pos, WHITE)  # Пример с квадратом для стирания
+        draw_square(win, start_pos, current_pos, WHITE)
 
     pygame.display.update()
 
-    # Обработка событий
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
-        # Нажатие мыши — начинаем рисовать
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             start_pos = event.pos
             drawing = True
 
-        # Отпускание мыши — сохраняем фигуру
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             end_pos = event.pos
             if start_pos and end_pos:
@@ -117,7 +106,6 @@ while run:
             drawing = False
             start_pos = None
 
-        # Нажатие клавиш — выбор фигуры и включение стерки
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s:
                 shape_type = "square"
@@ -127,7 +115,7 @@ while run:
                 shape_type = "equilateral_triangle"
             elif event.key == pygame.K_h:
                 shape_type = "rhombus"
-            elif event.key == pygame.K_ESCAPE:  # Выход из режима стерки
+            elif event.key == pygame.K_ESCAPE:
                 erase_mode = not erase_mode
 
 pygame.quit()

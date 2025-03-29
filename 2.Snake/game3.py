@@ -124,7 +124,7 @@ class MAIN:
     def __init__(self):
         self.snake = SNAKE()
         self.fruit = FRUIT()
-        self.score = 0  # Initialize the score
+        self.score = 0  
 
     def update(self):
         self.snake.move_snake()
@@ -139,16 +139,16 @@ class MAIN:
 
     def check_collision(self):
         if self.fruit.pos == self.snake.body[0]:
-            # Increase the score based on the type of fruit
+            
             if self.fruit.type == "banana":
                 self.score += 2
             elif self.fruit.type == "grape":
                 self.score += 5
             else:
-                self.score += 1  # Default to 1 point for apple
+                self.score += 1  
 
-            self.fruit.randomize()  # Randomize the fruit position
-            self.snake.add_block()  # Add a block to the snake
+            self.fruit.randomize()  
+            self.snake.add_block()  
             self.snake.play_crunch_sound()
 
         for block in self.snake.body[1:]:
@@ -165,7 +165,7 @@ class MAIN:
 
     def game_over(self):
         self.snake.reset()
-        self.score = 0  # Reset the score when the game is over
+        self.score = 0  
 
     def draw_grass(self):
         grass_color = (167, 209, 61)

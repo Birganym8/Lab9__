@@ -1,44 +1,44 @@
-# Imports
+# Импорты
 import pygame, sys
 from pygame.locals import *
 import random, time
 
-# Initializing Pygame
+# Инициализация Pygame
 pygame.init()
 
-# Setting up FPS 
+# Настройка FPS
 FPS = 60
 FramePerSec = pygame.time.Clock()
 
-# Creating colors
+# Создание цветов
 BLUE  = (0, 0, 255)
 RED   = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Other Variables for use in the program
+# Другие переменные, используемые в программе
 SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 600
 SPEED = 5
 SCORE = 0
-COINS = 0  # Track collected coins
+COINS = 0  # Подсчет собранных монет
 
-# Setting up Fonts
+# Настройка шрифтов
 font = pygame.font.SysFont("Verdana", 60)
 font_small = pygame.font.SysFont("Verdana", 20)
 game_over = font.render("Game Over", True, BLACK)
 
-# Load images
+# Загрузка изображений
 background = pygame.image.load("AnimatedStreet.png")
-coin_image = pygame.image.load("coin.png")  # Load coin image
+coin_image = pygame.image.load("coin.png")  # Загрузка изображения монеты
 
-# Create a white screen 
-DISPLAYSURF = pygame.display.set_mode((400,600))
+# Создание белого экрана
+DISPLAYSURF = pygame.display.set_mode((400, 600))
 DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Game")
 
-# Enemy class
+# Класс врага
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__() 
@@ -54,52 +54,52 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.top = 0
             self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
 
-# Player class
+# Класс игрока
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Player.png")
         self.rect = self.image.get_rect()
-        self.rect.center = (160, 520)  # Initial position of the player
+        self.rect.center = (160, 520)  # Начальная позиция игрока
 
     def move(self):
         pressed_keys = pygame.key.get_pressed()
         
-        # Move left
+        # Движение влево
         if self.rect.left > 0 and pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
         
-        # Move right
+        # Движение вправо
         if self.rect.right < SCREEN_WIDTH and pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
 
-        # Move up
+        # Движение вверх
         if self.rect.top > 0 and pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
         
-        # Move down
+        # Движение вниз
         if self.rect.bottom < SCREEN_HEIGHT and pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
 
-# Coin class with random weights
+# Класс монеты со случайным весом
 class Coin(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Coin.png")
         self.rect = self.image.get_rect()
-        # Coin randomly appears on the road
+        # Монета случайно появляется на дороге
         self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), random.randint(50, SCREEN_HEIGHT - 150))  
-        self.weight = random.randint(1, 5)  # Random weight for the coin (1 to 5)
+        self.weight = random.randint(1, 5)  # Случайный вес монеты (от 1 до 5)
 
     def move(self):
-        pass  # Coin does not move
+        pass  # Монета не двигается
 
-# Setting up Sprites        
+# Настройка спрайтов        
 P1 = Player()
 E1 = Enemy()
 C1 = Coin()
 
-# Creating Sprite Groups
+# Создание групп спрайтов
 enemies = pygame.sprite.Group()
 enemies.add(E1)
 coins = pygame.sprite.Group()
@@ -107,35 +107,35 @@ coins.add(C1)
 all_sprites = pygame.sprite.Group()
 all_sprites.add(P1, E1, C1)
 
-# Adding a new User event for speed increase
+# Добавление нового пользовательского события для увеличения скорости
 INC_SPEED = pygame.USEREVENT + 1
 pygame.time.set_timer(INC_SPEED, 1000)
 
-# Game Loop
+# Игровой цикл
 while True:
     for event in pygame.event.get():
         if event.type == INC_SPEED:
-            SPEED += 0.5  # Increase speed of enemies every second
+            SPEED += 0.5  # Увеличивать скорость врагов каждую секунду
         
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
 
-    # Draw background
+    # Отрисовка фона
     DISPLAYSURF.blit(background, (0, 0))
     
-    # Display score and coins
-    scores = font_small.render(f"Score: {SCORE}", True, BLACK)
-    coins_display = font_small.render(f"Coins: {COINS}", True, BLACK)
+    # Отображение очков и монет
+    scores = font_small.render(f"Очки: {SCORE}", True, BLACK)
+    coins_display = font_small.render(f"Монеты: {COINS}", True, BLACK)
     DISPLAYSURF.blit(scores, (10, 10))
     DISPLAYSURF.blit(coins_display, (SCREEN_WIDTH - 100, 10))
 
-    # Move and redraw all sprites
+    # Движение и отрисовка всех спрайтов
     for entity in all_sprites:
         entity.move()
         DISPLAYSURF.blit(entity.image, entity.rect)
 
-    # Collision check with enemies
+    # Проверка столкновения с врагами
     if pygame.sprite.spritecollideany(P1, enemies):
         pygame.mixer.Sound('crash.wav').play()
         time.sleep(1)
@@ -148,18 +148,18 @@ while True:
         pygame.quit()
         sys.exit()
 
-    # Collision check with coins
+    # Проверка столкновения с монетами
     if pygame.sprite.spritecollideany(P1, coins):
-        COINS += C1.weight  # Increase coins by the weight of the coin
-        SCORE += C1.weight  # Add the coin's weight to score
-        pygame.mixer.Sound('coin_collect.wav').play()  # Play sound on coin collection
-        C1.rect.top = 0  # Reset coin to top of screen
-        C1.rect.center = (random.randint(40, SCREEN_WIDTH - 40), random.randint(50, SCREEN_HEIGHT - 150))  # New random position
+        COINS += C1.weight  # Увеличить количество монет на вес монеты
+        SCORE += C1.weight  # Добавить вес монеты к очкам
+        pygame.mixer.Sound('coin_collect.wav').play()  # Проиграть звук при сборе монеты
+        C1.rect.top = 0  # Сбросить монету наверх экрана
+        C1.rect.center = (random.randint(40, SCREEN_WIDTH - 40), random.randint(50, SCREEN_HEIGHT - 150))  # Новая случайная позиция
         
-        # Increase enemy speed after collecting every 10 coins
+        # Увеличить скорость врагов после сбора каждых 10 монет
         if COINS >= 10:
-            SPEED += 1  # Increase enemy speed by 1
-            COINS = 0  # Reset coins after every 10 coins
+            SPEED += 1  # Увеличить скорость врагов на 1
+            COINS = 0  # Обнулить счетчик монет после каждых 10
 
     pygame.display.update()
-    FramePerSec.tick(FPS)  # Control the frame rate
+    FramePerSec.tick(FPS)  # Контроль частоты кадров
